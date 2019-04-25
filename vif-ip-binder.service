@@ -1,0 +1,14 @@
+[Unit]
+Description=VIF IP Rebinder for the dom0
+After=xapi.service syslog.target multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+ExecStart=/root/vif-ip-binder.py
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

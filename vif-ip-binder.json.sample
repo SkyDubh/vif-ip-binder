@@ -1,0 +1,11 @@
+{/* Remember to remove all the comments from the actual config      */
+    "user": "root",               /* XAPI username                  */
+    "password": "toor",           /* XAPI password                  */
+    "vmName": "Firewall",         /* VM name                        */
+    "sspnName": "dom0",           /* SSPN name                      */
+    "address": "192.168.0.2/24",  /* v4/v6 address/netmask          */
+    "gateway": "192.168.0.1",     /* [Optional] Gateway             */
+    "netSRs": [{"uid": "ip"}],    /* [Optional] List of CIFS/NFS SR */
+    "timeout": 30.0,              /* [Optional] XAPI msg timeout    */
+    "ipBinary": "/usr/sbin/ip"    /* [Optional] IP binary location  */
+}

@@ -35,6 +35,10 @@ The configuration file (`vif-ip-binder.json`) will need the login credentials fo
 
 The labels are used for triggers and to retrieve the appropriate network bridge to apply the ip to.
 
+### Management network bridge
+
+In order to retain functionalities (console/performance monitors) it is of vital importance to add the same ip we use to reach the dom0 to the network bridge XAPI uses to generate management links. To avoid invalid configuration or network problems, we add the ip with a /32 (v4) or /128 (v6) mask.
+
 ### Address
 
 The address to be assigned to the bridge relative to the virtual interfaces that spawns attached to the target VM, in the form of `address/netmask`. Supports both IPv4 and IPv6. 

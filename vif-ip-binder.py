@@ -251,18 +251,19 @@ def xenapi_session():
         pass
 
 
+def spopen(target):
+    import subprocess
+    return subprocess.Popen(
+        target,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    ).communicate()
+
+
 def rebind_ip_address(ifname):
     """Checks if the IP is already bound, binds it otherwise"""
     global IP, IPSHW, IPADD, IPROUTE_REMOVE, IPROUTE_ADD
-    import subprocess
     import re
-
-    def spopen(target):
-        return subprocess.Popen(
-            target,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        ).communicate()
 
     # Grab a list of all IPs
     response = spopen(IPSHW + [ifname])[0]
@@ -439,6 +440,7 @@ if __name__ == '__main__':
     PASSWORD = data.get('password')  # Password
     VMNAME = data.get('vmName')  # Label of the virtual machine
     SSPNNAME = data.get('sspnName')  # Label of the SSPN
+    BRNAME = data.get('brName')  # Management bridge name
     IP = data.get('address')  # SSPN IP to assign
     GW = data.get('gateway')  # Gateway
     NETSRS = data.get('netSRs')  # List of SRs with network PBDs (NFS/CIFS) to be 
@@ -451,7 +453,7 @@ if __name__ == '__main__':
     IPBIN = data.get('ipBinary') or '/usr/sbin/ip'  # Location of ip binary
     del data
 
-    if (None is USER) or (None is PASSWORD) or (None is VMNAME) or (None is SSPNNAME) or (None is IP) or ('/' not in IP):
+    if (None is USER) or (None is PASSWORD) or (None is VMNAME) or (None is SSPNNAME) or (None is BRNAME) or (None is IP) or ('/' not in IP):
         print('Invalid JSON configuration file "{}", required parameters missing')
         exit(2)
     
@@ -475,14 +477,20 @@ if __name__ == '__main__':
         EVT_TIMEOUT,
     ))
     IP = IP.split('/')[0]  # SSPN IP to assign
+    IPADDMGMT = IPADD + [BRNAME]
+    IPADDMGMT[3] = IP + ('/128' if bIPv6 else '/32')
     if bIPv6:
         IPSHW.insert(1, '-6')
         IPADD.insert(1, '-6')
+        IPADDMGMT.insert(1, '-6')
         IPROUTE_REMOVE.insert(1, '-6')
         IPROUTE_ADD.insert(1, '-6')
 
+    # First things first, add the management ip
+    spopen(IPADDMGMT)
+    print('Adding {} to the management interface {}'.format(IPADDMGMT[3], IPADDMGMT[5]))
+
     # Initialise global vars, hook the signal handlers and start the service
-    threads = []  # Worker threads
     session = None  # Global XAPI session variable
     bEndless = True  # Not-really endless flag
     signal(SIGTERM, sigterm_handler)

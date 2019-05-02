@@ -3,6 +3,7 @@
     "password": "toor",           /* XAPI password                  */
     "vmName": "Firewall",         /* VM name                        */
     "sspnName": "dom0",           /* SSPN name                      */
+    "brName": "xenbr1",           /* Management network bridge      */
     "address": "192.168.0.2/24",  /* v4/v6 address/netmask          */
     "gateway": "192.168.0.1",     /* [Optional] Gateway             */
     "netSRs": [{"uid": "ip"}],    /* [Optional] List of CIFS/NFS SR */

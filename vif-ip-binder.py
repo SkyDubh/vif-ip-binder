@@ -478,17 +478,29 @@ if __name__ == '__main__':
     ))
     IP = IP.split('/')[0]  # SSPN IP to assign
     IPADDMGMT = IPADD + [BRNAME]
+    IPDELMGMT = IPADD + [BRNAME]
+    IPDELMGMT[2] = 'del'
     IPADDMGMT[3] = IP + ('/128' if bIPv6 else '/32')
     if bIPv6:
         IPSHW.insert(1, '-6')
         IPADD.insert(1, '-6')
         IPADDMGMT.insert(1, '-6')
+        IPDELMGMT.insert(1, '-6')
         IPROUTE_REMOVE.insert(1, '-6')
         IPROUTE_ADD.insert(1, '-6')
 
-    # First things first, add the management ip
+    # Remove the conflicting ip/net, and add the single host version
+    spopen(IPDELMGMT)
     spopen(IPADDMGMT)
     print('Adding {} to the management interface {}'.format(IPADDMGMT[3], IPADDMGMT[5]))
+
+    # Cleanup
+    del IPBIN
+    del BRNAME
+    del IPADDMGMT
+    del IPDELMGMT
+    del bIPv6
+    del GW
 
     # Initialise global vars, hook the signal handlers and start the service
     session = None  # Global XAPI session variable
